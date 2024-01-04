@@ -1,7 +1,5 @@
 import logging
-from homeassistant.components.switch import SwitchEntity
 from homeassistant.components.number import NumberEntity
-from typing import Any
 from homeassistant.const import CONF_ID
 from .const import (
     DOMAIN,

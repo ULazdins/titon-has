@@ -13,7 +13,9 @@ _LOGGER = logging.getLogger(__name__)
 # pylint: disable=broad-except
 
 
-class CentrometalBoilerConfigFlowHandler(config_entries.ConfigFlow, domain="minimal_integration"):
+class CentrometalBoilerConfigFlowHandler(
+    config_entries.ConfigFlow, domain="minimal_integration"
+):
     """Handle a config flow for Centrometal boiler."""
 
     VERSION = 1
@@ -42,7 +44,5 @@ class CentrometalBoilerConfigFlowHandler(config_entries.ConfigFlow, domain="mini
 
         return self.async_create_entry(
             title="Test thing",
-            data={
-                CONF_ID: unique_id
-            },
+            data={CONF_ID: unique_id},
         )

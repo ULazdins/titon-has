@@ -10,16 +10,20 @@ from .const import (
 
 _LOGGER = logging.getLogger(__name__)
 
+
 async def async_setup_entry(hass, config_entry, async_add_entities):
     unique_id = config_entry.data[CONF_ID]
     manager = hass.data[DOMAIN][unique_id][WEB_BOILER_SYSTEM]
 
-    async_add_entities([
-        TitonHRVSpeedSwitch(manager, 1),
-        TitonHRVSpeedSwitch(manager, 2),
-        TitonHRVSpeedSwitch(manager, 3),
-        TitonHRVSpeedSwitch(manager, 4)
-    ], True)
+    async_add_entities(
+        [
+            TitonHRVSpeedSwitch(manager, 1),
+            TitonHRVSpeedSwitch(manager, 2),
+            TitonHRVSpeedSwitch(manager, 3),
+            TitonHRVSpeedSwitch(manager, 4),
+        ],
+        True,
+    )
 
     await manager.start()
 
@@ -41,7 +45,7 @@ class TitonHRVSpeedSwitch(SwitchEntity):
     @property
     def name(self):
         return f"Titon Aura-t Wifi HRV controller (Speed {self.speed})"
-    
+
     @property
     def is_on(self):
         """Return true if it is on."""
@@ -56,10 +60,10 @@ class TitonHRVSpeedSwitch(SwitchEntity):
     def unique_id(self) -> str:
         """Return a unique ID."""
         return f"safsdfdsfsd{self.speed}"
-    
+
     def turn_on(self, **kwargs: Any) -> None:
         """Turn on the fan."""
-        
+
         self.manager.set_speed(self.speed)
 
     def turn_off(self, **kwargs: Any) -> None:
