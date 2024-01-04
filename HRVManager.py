@@ -1,10 +1,20 @@
 import logging
 import selectors
 import asyncio
+from functools import reduce
 
 _LOGGER = logging.getLogger(__name__)
 
 # TODO: Auto-Restart when connection closes
+
+
+def hash_message(msg):
+    chars = [ord(x) for x in msg]
+
+    def xor(x, y):
+        return x ^ y
+
+    return reduce(xor, chars)
 
 
 class HRVManager:
@@ -13,30 +23,15 @@ class HRVManager:
     my_mac = "12-34-56-78-12-34"
     hrv_mac = "D2-95-00-00-00-9E"
 
+    def get_full_message(self, msg):
+        payload = f"{msg}{ '%d' % hash_message(msg) }"
+        return f":DAT|{self.hrv_mac}|{self.my_mac}|<stx>{payload}<etx>;"
+
     message_handshake = f":DLF||{my_mac};"
     message_handshake_ack = f":DLF||{my_mac}|PS;"
     message_register_hrv = f":_CX|{hrv_mac}|0;"
     message_register_hrv_ack = f":_CX|{hrv_mac}|0|PS;"  # FA - response if HRV not found
-    message_get_fan_speed = f":DAT|{hrv_mac}|{my_mac}|<stx>L76<etx>;"
-    message_get_fan_speed_ack = f":DAT|{hrv_mac}|{my_mac}|PS"
-
-    # Set fan speed
-    fan_speed1 = f"F1{ '%03d' % (70 ^ 49)}"
-    fan_speed2 = f"F2{ '%03d' % (70 ^ 50)}"
-    fan_speed3 = f"F3{ '%03d' % (70 ^ 51)}"
-    fan_speed4 = f"F4{ '%03d' % (70 ^ 52)}"
-    message_set_fan_1 = (
-        f":DAT|D2-95-00-00-00-9E|12-34-56-78-12-34|<stx>{ fan_speed1 }<etx>;"
-    )
-    message_set_fan_2 = (
-        f":DAT|D2-95-00-00-00-9E|12-34-56-78-12-34|<stx>{ fan_speed2 }<etx>;"
-    )
-    message_set_fan_3 = (
-        f":DAT|D2-95-00-00-00-9E|12-34-56-78-12-34|<stx>{ fan_speed3 }<etx>;"
-    )
-    message_set_fan_4 = (
-        f":DAT|D2-95-00-00-00-9E|12-34-56-78-12-34|<stx>{ fan_speed4 }<etx>;"
-    )
+    message_ack = f":DAT|{hrv_mac}|{my_mac}|PS"
 
     update_callbacks = []
 
@@ -59,15 +54,15 @@ class HRVManager:
 
     def set_speed(self, speed):
         if speed == 1:
-            self.messages.append(self.message_set_fan_1)
+            self.messages.append(self.get_full_message("F1"))
         if speed == 2:
-            self.messages.append(self.message_set_fan_2)
+            self.messages.append(self.get_full_message("F2"))
         if speed == 3:
-            self.messages.append(self.message_set_fan_3)
+            self.messages.append(self.get_full_message("F3"))
         if speed == 4:
-            self.messages.append(self.message_set_fan_4)
+            self.messages.append(self.get_full_message("F4"))
 
-        self.messages.append(self.message_get_fan_speed)
+        self.messages.append(self.get_full_message("L"))
 
     async def receive_messages(self, reader):
         while True:
@@ -90,15 +85,15 @@ class HRVManager:
             if string == self.message_handshake_ack:
                 self.messages.append(self.message_register_hrv)
             elif string == self.message_register_hrv_ack:
-                self.messages.append(self.message_get_fan_speed)
-            elif string.startswith(self.message_get_fan_speed_ack):
+                self.messages.append(self.get_full_message("L"))
+            elif string.startswith(self.message_ack):
                 try:
-                    payload = string.removeprefix(
-                        self.message_get_fan_speed_ack + "|"
-                    ).removesuffix(";")
+                    payload = string.removeprefix(self.message_ack + "|").removesuffix(
+                        ";"
+                    )
                     if payload == "<stx>F<ack><etx>":
                         # Setting speed confirmed, reloading config
-                        self.messages.append(self.message_get_fan_speed)
+                        self.messages.append(self.get_full_message("L"))
                     else:
                         payload = payload.removeprefix("<stx>L").removesuffix("<etx>")
                         speed_hex = payload[3:5]
@@ -130,7 +125,7 @@ class HRVManager:
 
                         async def schedule_job():
                             await asyncio.sleep(5)
-                            self.messages.append(self.message_get_fan_speed)
+                            self.messages.append(self.get_full_message("L"))
 
                         loop.create_task(schedule_job())
                 except Exception as e:
