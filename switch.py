@@ -46,7 +46,7 @@ class TitonHRVSpeedSwitch(SwitchEntity):
 
         def update_callback():
             self.async_write_ha_state()
-            _LOGGER.warning(f"update_callback called")
+            _LOGGER.debug("update_callback called")
 
         self.fan_manager.update_callbacks.append(update_callback)
 
@@ -67,7 +67,7 @@ class TitonHRVSpeedSwitch(SwitchEntity):
     @property
     def unique_id(self) -> str:
         """Return a unique ID."""
-        return f"safsdfdsfsd{self.speed}"
+        return f"titon_switch{self.speed}"
 
     async def async_turn_on(self, **kwargs: Any) -> None:
         """Turn on the fan."""

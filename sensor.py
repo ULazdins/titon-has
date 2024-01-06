@@ -46,7 +46,7 @@ class YourIntegrationSensor(SensorEntity):
 
         def update_callback():
             self.async_write_ha_state()
-            _LOGGER.warning(f"update_callback called")
+            _LOGGER.debug("update_callback called")
 
         self.fan_manager.update_callbacks.append(update_callback)
 
@@ -56,13 +56,26 @@ class YourIntegrationSensor(SensorEntity):
 
     @property
     def state(self):
-        _LOGGER.info(
-            "Read sensor value: %d",
-            self.fan_manager.value,
-        )
         return self.fan_manager.value
 
     @property
     def available(self):
         """Return True if the device is available."""
         return self.fan_manager.value is not None
+
+    @property
+    def unique_id(self) -> str:
+        """Return a unique ID."""
+        return "titon_fan"
+
+    @property
+    def device_info(self):
+        """Return the device info."""
+        return {
+            "identifiers": {
+                # Serial numbers are unique identifiers within a specific domain
+                (DOMAIN, "unique_device_id")
+            },
+            "name": "Titon HRV Unit",
+            "manufacturer": "Titon",
+        }
