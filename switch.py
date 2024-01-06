@@ -1,46 +1,54 @@
 import logging
+
 from homeassistant.components.switch import SwitchEntity
-from homeassistant.components.number import NumberEntity
-from typing import Any
 from homeassistant.const import CONF_ID
+
+from typing import Any
 from .const import (
     DOMAIN,
     WEB_BOILER_SYSTEM,
 )
+from .titon.TitonFanSpeed import TitonFanSpeed
 
 _LOGGER = logging.getLogger(__name__)
 
 
 async def async_setup_entry(hass, config_entry, async_add_entities):
     unique_id = config_entry.data[CONF_ID]
-    manager = hass.data[DOMAIN][unique_id][WEB_BOILER_SYSTEM]
+    client = hass.data[DOMAIN][unique_id][WEB_BOILER_SYSTEM]
+
+    fan_manager = TitonFanSpeed(client)
 
     async_add_entities(
         [
-            TitonHRVSpeedSwitch(manager, 1),
-            TitonHRVSpeedSwitch(manager, 2),
-            TitonHRVSpeedSwitch(manager, 3),
-            TitonHRVSpeedSwitch(manager, 4),
+            TitonHRVSpeedSwitch(fan_manager, 0),
+            TitonHRVSpeedSwitch(fan_manager, 1),
+            TitonHRVSpeedSwitch(fan_manager, 2),
+            TitonHRVSpeedSwitch(fan_manager, 3),
+            TitonHRVSpeedSwitch(fan_manager, 4),
         ],
         True,
     )
 
-    await manager.start()
+    if not client.is_connected:
+        await client.connect()
+
+    await fan_manager.perform()
 
 
 class TitonHRVSpeedSwitch(SwitchEntity):
-    def __init__(self, manager, speed):
+    def __init__(self, fan_manager, speed):
         """Initialize the fan."""
         super().__init__()
 
-        self.manager = manager
+        self.fan_manager = fan_manager
         self.speed = speed
 
         def update_callback():
             self.async_write_ha_state()
             _LOGGER.warning(f"update_callback called")
 
-        self.manager.update_callbacks.append(update_callback)
+        self.fan_manager.update_callbacks.append(update_callback)
 
     @property
     def name(self):
@@ -49,22 +57,22 @@ class TitonHRVSpeedSwitch(SwitchEntity):
     @property
     def is_on(self):
         """Return true if it is on."""
-        return self.manager.speed == self.speed
+        return self.fan_manager.value == self.speed
 
     @property
     def available(self):
         """Return True if the device is available."""
-        return self.manager.speed != 0
+        return self.fan_manager.value is not None
 
     @property
     def unique_id(self) -> str:
         """Return a unique ID."""
         return f"safsdfdsfsd{self.speed}"
 
-    def turn_on(self, **kwargs: Any) -> None:
+    async def async_turn_on(self, **kwargs: Any) -> None:
         """Turn on the fan."""
 
-        self.manager.set_speed(self.speed)
+        await self.fan_manager.set_to(self.speed)
 
     def turn_off(self, **kwargs: Any) -> None:
         """Turn the fan off."""

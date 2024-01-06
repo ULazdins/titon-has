@@ -10,7 +10,7 @@ from .const import (
     WEB_BOILER_SYSTEM,
 )
 
-from .HRVManager import HRVManager
+from .titon.TitonClient import TitonClient
 
 PLATFORMS = [Platform.SENSOR, Platform.SWITCH, Platform.NUMBER]
 
@@ -27,24 +27,17 @@ async def async_setup(hass: HomeAssistant, config: dict):
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Set up the Titon integration."""
 
-    manager = HRVManager()
+    client = TitonClient("D2-95-00-00-00-9E")
 
     unique_id = entry.data[CONF_ID]
     hass.data[DOMAIN][unique_id] = {}
-    hass.data[DOMAIN][unique_id][WEB_BOILER_SYSTEM] = manager
+    hass.data[DOMAIN][unique_id][WEB_BOILER_SYSTEM] = client
 
     # Will look into sensor.py for sensor entities. All entities here, even if defined as Switches, will be installed as sensors
     # Docs forget to mention that
 
-    await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
-
-    # hass.async_create_task(
-    #     hass.config_entries.async_forward_entry_setup(entry, "sensor")
-    # )
     # # Will look into switch.py for switches
-    # hass.async_create_task(
-    #     hass.config_entries.async_forward_entry_setup(entry, "switch")
-    # )
+    await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
     _LOGGER.debug("Titon component setup finished")
 

@@ -10,12 +10,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 async def async_setup_entry(hass, config_entry, async_add_entities):
-    unique_id = config_entry.data[CONF_ID]
-    manager = hass.data[DOMAIN][unique_id][WEB_BOILER_SYSTEM]
-
     async_add_entities([FanSpeed()], True)
-
-    await manager.start()
 
 
 class FanSpeed(NumberEntity):
