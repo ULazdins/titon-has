@@ -4,7 +4,7 @@ import asyncio
 from homeassistant.components.binary_sensor import BinarySensorEntity
 from homeassistant.const import CONF_ID
 
-from .const import DOMAIN, WEB_BOILER_SYSTEM
+from .const import DOMAIN, TITON_CLIENT
 from .titon.TitonGeneralInfo import TitonGeneralInfo
 
 _LOGGER = logging.getLogger(__name__)
@@ -12,7 +12,7 @@ _LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(hass, config_entry, async_add_entities):
     unique_id = config_entry.data[CONF_ID]
-    client = hass.data[DOMAIN][unique_id][WEB_BOILER_SYSTEM]
+    client = hass.data[DOMAIN][unique_id][TITON_CLIENT]
 
     info = TitonGeneralInfo(client)
 

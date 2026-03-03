@@ -5,7 +5,7 @@ from homeassistant.const import CONF_ID
 
 from .const import (
     DOMAIN,
-    WEB_BOILER_SYSTEM,
+    TITON_CLIENT,
 )
 from .titon.TitonFanSpeed import TitonFanSpeed
 
@@ -17,7 +17,7 @@ SPEED_OPTIONS = ["Speed 0", "Speed 1", "Speed 2", "Speed 3", "Speed 4"]
 
 async def async_setup_entry(hass, config_entry, async_add_entities):
     unique_id = config_entry.data[CONF_ID]
-    client = hass.data[DOMAIN][unique_id][WEB_BOILER_SYSTEM]
+    client = hass.data[DOMAIN][unique_id][TITON_CLIENT]
 
     fan_manager = TitonFanSpeed(client)
 

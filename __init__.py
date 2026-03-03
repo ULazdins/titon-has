@@ -7,7 +7,7 @@ from homeassistant.const import Platform
 
 from .const import (
     DOMAIN,
-    WEB_BOILER_SYSTEM,
+    TITON_CLIENT,
 )
 
 from .titon.TitonClient import TitonClient
@@ -27,11 +27,12 @@ async def async_setup(hass: HomeAssistant, config: dict):
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Set up the Titon integration."""
 
-    client = TitonClient("D2-95-00-00-00-9E")
+    mac = entry.data[CONF_ID]
+    client = TitonClient(mac)
 
     unique_id = entry.data[CONF_ID]
     hass.data[DOMAIN][unique_id] = {}
-    hass.data[DOMAIN][unique_id][WEB_BOILER_SYSTEM] = client
+    hass.data[DOMAIN][unique_id][TITON_CLIENT] = client
 
     # Will look into sensor.py for sensor entities. All entities here, even if defined as Switches, will be installed as sensors
     # Docs forget to mention that
