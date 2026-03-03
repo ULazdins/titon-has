@@ -12,7 +12,7 @@ from .const import (
 
 from .titon.TitonClient import TitonClient
 
-PLATFORMS = [Platform.SENSOR, Platform.SELECT, Platform.NUMBER, Platform.BINARY_SENSOR]
+PLATFORMS = [Platform.SELECT, Platform.NUMBER, Platform.BINARY_SENSOR]
 
 _LOGGER = logging.getLogger(__name__)
 

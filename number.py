@@ -96,7 +96,7 @@ class HumidityNumber(NumberEntity):
 
         def update_callback():
             self.async_write_ha_state()
-        
+
         # TitonHumidity has no update_callbacks by default; we'll trust callers to
         # call perform() on setup. If you want continuous polling, add a loop.
 
