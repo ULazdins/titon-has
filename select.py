@@ -1,7 +1,6 @@
 import logging
-import asyncio
 
-from homeassistant.components.sensor import SensorEntity
+from homeassistant.components.select import SelectEntity
 from homeassistant.const import CONF_ID
 
 from .const import (
@@ -12,6 +11,9 @@ from .titon.TitonFanSpeed import TitonFanSpeed
 
 _LOGGER = logging.getLogger(__name__)
 
+# Define the 5 speed options
+SPEED_OPTIONS = ["Speed 0", "Speed 1", "Speed 2", "Speed 3", "Speed 4"]
+
 
 async def async_setup_entry(hass, config_entry, async_add_entities):
     unique_id = config_entry.data[CONF_ID]
@@ -19,32 +21,24 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
 
     fan_manager = TitonFanSpeed(client)
 
-    async_add_entities([YourIntegrationSensor(fan_manager)], True)
+    async_add_entities(
+        [
+            TitonHRVSpeedSelector(fan_manager),
+        ],
+        True,
+    )
 
     if not client.is_connected:
         await client.connect()
 
     await fan_manager.perform()
 
-    async def schedule_job():
-        while True:
-            await asyncio.sleep(5)
-            if not client.is_connected:
-                await client.connect()
 
-            try:
-                await fan_manager.perform()
-            except (BaseException, ValueError) as e:
-                _LOGGER.exception(f"Failed to update sensor ${e}")
-
-    loop = asyncio.get_event_loop()
-    loop.create_task(schedule_job())
-
-
-class YourIntegrationSensor(SensorEntity):
+class TitonHRVSpeedSelector(SelectEntity):
     def __init__(self, fan_manager):
-        """Initialize the binary sensor."""
+        """Initialize the fan speed selector."""
         super().__init__()
+
         self.fan_manager = fan_manager
 
         def update_callback():
@@ -55,11 +49,19 @@ class YourIntegrationSensor(SensorEntity):
 
     @property
     def name(self):
-        return "Minimal Sensor"
+        return "Titon Aura-t Wifi HRV Speed"
 
     @property
-    def state(self):
-        return self.fan_manager.value
+    def options(self) -> list[str]:
+        """Return the list of available options."""
+        return SPEED_OPTIONS
+
+    @property
+    def current_option(self) -> str | None:
+        """Return the current selected option."""
+        if self.fan_manager.value is not None:
+            return SPEED_OPTIONS[self.fan_manager.value]
+        return None
 
     @property
     def available(self):
@@ -69,7 +71,12 @@ class YourIntegrationSensor(SensorEntity):
     @property
     def unique_id(self) -> str:
         """Return a unique ID."""
-        return "titon_fan"
+        return "titon_speed_selector"
+
+    async def async_select_option(self, option: str) -> None:
+        """Change the selected option."""
+        speed = SPEED_OPTIONS.index(option)
+        await self.fan_manager.set_to(speed)
 
     @property
     def device_info(self):
