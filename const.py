@@ -1,2 +1,2 @@
-DOMAIN = "minimal_integration"
+DOMAIN = "titon_integration"
 TITON_CLIENT = "titon_client"

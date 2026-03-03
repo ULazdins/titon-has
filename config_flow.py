@@ -16,10 +16,10 @@ _LOGGER = logging.getLogger(__name__)
 # pylint: disable=broad-except
 
 
-class MinimalIntegrationConfigFlowHandler(
-    config_entries.ConfigFlow, domain="minimal_integration"
+class TitonIntegrationConfigFlowHandler(
+    config_entries.ConfigFlow, domain="titon_integration"
 ):
-    """Handle a config flow for the Titon/minimal integration."""
+    """Handle a config flow for the Titon Aura-T integration."""
 
     VERSION = 1
     CONNECTION_CLASS = config_entries.CONN_CLASS_CLOUD_PUSH

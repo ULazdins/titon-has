@@ -1,4 +1,4 @@
-"""Switch platform for minimal_integration."""
+"""Switch platform for Titon Aura-T."""
 
 import logging
 

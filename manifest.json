@@ -1,10 +1,10 @@
 {
-    "domain": "minimal_integration",
-    "name": "Minimal Integration",
-    "version": "0.0.1",
-    "config_flow": true,
-    "documentation": "https://minimal_integration-documentation.com",
-    "dependencies": [],
-    "codeowners": [],
-    "requirements": []
+  "domain": "titon_integration",
+  "name": "Titon Aura-T Integration",
+  "version": "0.0.1",
+  "config_flow": true,
+  "documentation": "",
+  "dependencies": [],
+  "codeowners": ["Ugis Lazdins"],
+  "requirements": []
 }
