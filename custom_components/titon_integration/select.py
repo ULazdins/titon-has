@@ -3,11 +3,12 @@ import logging
 from homeassistant.components.select import SelectEntity
 from homeassistant.const import CONF_ID
 
+from titon import TitonFanSpeed
+
 from .const import (
     DOMAIN,
     TITON_CLIENT,
 )
-from .titon.TitonFanSpeed import TitonFanSpeed
 
 _LOGGER = logging.getLogger(__name__)
 

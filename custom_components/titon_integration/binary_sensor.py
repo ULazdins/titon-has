@@ -4,8 +4,9 @@ import asyncio
 from homeassistant.components.binary_sensor import BinarySensorEntity
 from homeassistant.const import CONF_ID
 
+from titon import TitonGeneralInfo
+
 from .const import DOMAIN, TITON_CLIENT
-from .titon.TitonGeneralInfo import TitonGeneralInfo
 
 _LOGGER = logging.getLogger(__name__)
 

@@ -1,14 +1,14 @@
-"""Config flow for Centrometal boiler integration."""
+"""Config flow for the Titon Aura-T integration."""
 
 from collections import OrderedDict
 import logging
 
 import voluptuous as vol
 
+from titon import TitonClient
+
 from homeassistant import config_entries
 from homeassistant.const import CONF_ID
-
-from .titon.TitonClient import TitonClient
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -26,7 +26,7 @@ class TitonIntegrationConfigFlowHandler(
 
     @staticmethod
     def async_get_options_flow(config_entry):
-        return MinimalIntegrationOptionsFlow(config_entry)
+        return TitonOptionsFlow(config_entry)
 
     async def _show_setup_form(self, errors=None):
         """Show the setup form to the user."""
@@ -75,7 +75,9 @@ class TitonIntegrationConfigFlowHandler(
         )
 
 
-class MinimalIntegrationOptionsFlow(config_entries.OptionsFlow):
+class TitonOptionsFlow(config_entries.OptionsFlow):
+    """Allow the configured MAC address to be changed after setup."""
+
     def __init__(self, config_entry):
         self.config_entry = config_entry
 

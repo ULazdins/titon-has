@@ -1,0 +1,33 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Titon Aura-T",
+        "description": "Enter the MAC address of your Titon HRV unit, as shown in the Titon app.",
+        "data": {
+          "id": "MAC address"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Could not reach the unit. Check the MAC address and that the unit is online."
+    },
+    "abort": {
+      "already_configured": "This unit is already configured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Titon Aura-T",
+        "description": "Change the MAC address this integration talks to.",
+        "data": {
+          "id": "MAC address"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Could not reach the unit. Check the MAC address and that the unit is online."
+    }
+  }
+}

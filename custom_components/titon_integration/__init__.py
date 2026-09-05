@@ -5,12 +5,12 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_ID
 from homeassistant.const import Platform
 
+from titon import TitonClient
+
 from .const import (
     DOMAIN,
     TITON_CLIENT,
 )
-
-from .titon.TitonClient import TitonClient
 
 PLATFORMS = [Platform.SELECT, Platform.NUMBER, Platform.BINARY_SENSOR]
 

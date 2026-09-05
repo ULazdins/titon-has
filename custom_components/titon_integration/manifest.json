@@ -1,0 +1,12 @@
+{
+  "domain": "titon_integration",
+  "name": "Titon Aura-T",
+  "codeowners": ["@ULazdins"],
+  "config_flow": true,
+  "documentation": "https://github.com/ULazdins/titon-has",
+  "integration_type": "device",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/ULazdins/titon-has/issues",
+  "requirements": ["titon==0.2.0"],
+  "version": "0.1.0"
+}
